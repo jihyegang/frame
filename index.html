@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Little Frame Gallery</title>
-  <!-- 구글 필기체 폰트(Great Vibes) 불러오기 -->
+  <!-- 필기체 폰트 불러오기 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  
   <style>
     :root {
       --bg-color: #0f172a;
@@ -17,7 +20,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
     body { background-color: var(--bg-color); color: #f8fafc; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-    /* 헤더: 필기체 스타일 적용 */
+    /* 헤더 스타일 (필기체 적용) */
     header { 
       background: #1e293b; 
       text-align: center; 
@@ -31,7 +34,7 @@
     }
     
     /* 하단 탭 */
-    nav { display: flex; background: #1e293b; border-top: 1px solid #334155; position: fixed; bottom: 0; width: 100%; height: 60px; }
+    nav { display: flex; background: #1e293b; border-top: 1px solid #334155; position: fixed; bottom: 0; width: 100%; height: 60px; z-index: 10; }
     .nav-btn { flex: 1; border: none; background: none; color: #94a3b8; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .nav-btn.active { color: var(--accent-gold); }
 
@@ -67,7 +70,7 @@
     .card-actions { position: absolute; top: -12px; right: 10px; display: flex; gap: 4px; }
     .mini-btn { background: #000; color: #fff; border: none; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; cursor: pointer; }
 
-    /* 연출 효과 (3D 회전 및 이펙트) */
+    /* 연출 효과 */
     .rotate-anim { animation: spin3d 1.2s ease-out; }
     @keyframes spin3d {
       0% { transform: rotateY(0deg) scale(0.5); }
@@ -83,13 +86,13 @@
 </head>
 <body>
 
-  <!-- 상단 필기체 헤더 -->
+  <!-- 헤더 -->
   <header>My Little Frame Gallery</header>
   
   <canvas id="particleCanvas"></canvas>
 
   <main>
-    <!-- 탭 1: 개봉 연출 -->
+    <!-- 1. 팩 개봉 -->
     <div id="tab-pack" class="tab-content active">
       <div class="pack" onclick="openRandomPack()">
         <span style="font-size:3rem">🎁</span>
@@ -97,7 +100,7 @@
       </div>
     </div>
 
-    <!-- 탭 2: 카드 등록 -->
+    <!-- 2. 카드 등록 -->
     <div id="tab-register" class="tab-content">
       <div class="form-box">
         <h3 style="margin-bottom:12px; text-align:center;">📸 새 사진 카드 만들기</h3>
@@ -109,20 +112,20 @@
       </div>
     </div>
 
-    <!-- 탭 3: 연출 결과 및 메시지 -->
+    <!-- 3. 연출 결과 -->
     <div id="tab-effect" class="tab-content">
       <div id="effectCardContainer"></div>
       <h3 style="margin-top:15px; color:var(--accent-gold); text-align:center;">🎉 사진이 전시관에 전시되었습니다!</h3>
       <button class="btn" style="width:200px;" onclick="switchTab('gallery')">전시관으로 이동</button>
     </div>
 
-    <!-- 탭 4: 전시관 (좌우 스크롤) -->
+    <!-- 4. 전시관 -->
     <div id="tab-gallery" class="tab-content" style="max-width:100%;">
       <div class="gallery-viewport" id="galleryContainer"></div>
     </div>
   </main>
 
-  <!-- 하단 네비게이션 -->
+  <!-- 하단 탭 -->
   <nav>
     <button class="nav-btn active" onclick="switchTab('pack')">🎁<span>팩 개봉</span></button>
     <button class="nav-btn" onclick="switchTab('register')">➕<span>카드 등록</span></button>
@@ -130,10 +133,13 @@
   </nav>
 
   <script>
-    // 데이터 로드
-    let cards = JSON.parse(localStorage.getItem('myPhotoCards') || '[]');
+    let cards = [];
+    try {
+      cards = JSON.parse(localStorage.getItem('myPhotoCards') || '[]');
+    } catch(e) {
+      cards = [];
+    }
 
-    // 초기 샘플 데이터
     if(cards.length === 0) {
       cards = [{
         id: Date.now(),
@@ -145,9 +151,10 @@
       saveData();
     }
 
-    function saveData() { localStorage.setItem('myPhotoCards', JSON.stringify(cards)); }
+    function saveData() { 
+      try { localStorage.setItem('myPhotoCards', JSON.stringify(cards)); } catch(e){} 
+    }
 
-    // 탭 전환
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -167,7 +174,6 @@
       }
     }
 
-    // 카드 HTML 템플릿 생성
     function createCardHTML(card, showActions = false) {
       return `
         <div class="pokemon-card">
@@ -192,13 +198,11 @@
       `;
     }
 
-    // 팩 개봉 시 랜덤 카드 연출
     function openRandomPack() {
       const randomCard = cards[Math.floor(Math.random() * cards.length)];
       triggerCardEffect(randomCard);
     }
 
-    // 카드 새 등록
     function submitNewCard() {
       const title = document.getElementById('regTitle').value || "무제 카드";
       const meta = document.getElementById('regMeta').value || "날짜/장소 미상";
@@ -221,26 +225,23 @@
       }
     }
 
-    // 3D 회전 + 이펙트 + 소리 연출
     function triggerCardEffect(card) {
       switchTab('effect');
       const container = document.getElementById('effectCardContainer');
       container.innerHTML = createCardHTML(card);
       
       const cardEl = container.querySelector('.pokemon-card');
-      cardEl.classList.add('rotate-anim');
+      if(cardEl) cardEl.classList.add('rotate-anim');
 
       playChimeSound();
       startParticles();
     }
 
-    // 전시관 그리기
     function renderGallery() {
       const gallery = document.getElementById('galleryContainer');
       gallery.innerHTML = cards.map(c => createCardHTML(c, true)).join('');
     }
 
-    // 카드 수정
     function editCard(id) {
       const card = cards.find(c => c.id === id);
       if(!card) return;
@@ -258,7 +259,6 @@
       renderGallery();
     }
 
-    // 카드 삭제
     function deleteCard(id) {
       if(confirm("이 사진 카드를 삭제하시겠습니까?")) {
         cards = cards.filter(c => c.id !== id);
@@ -267,7 +267,6 @@
       }
     }
 
-    // Web Audio API 효과음 생성
     function playChimeSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -286,9 +285,9 @@
       } catch(e){}
     }
 
-    // Canvas 빛가루 이펙트
     function startParticles() {
       const canvas = document.getElementById('particleCanvas');
+      if(!canvas) return;
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
