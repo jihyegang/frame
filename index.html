@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Photo TCG Pocket</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-gold: #f59e0b;
+      --primary: #3b82f6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+    body { background-color: var(--bg-color); color: #f8fafc; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* 헤더 & 하단 탭 */
+    header { background: #1e293b; text-align: center; padding: 12px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #334155; color: var(--accent-gold); }
+    nav { display: flex; background: #1e293b; border-top: 1px solid #334155; position: fixed; bottom: 0; width: 100%; height: 60px; }
+    .nav-btn { flex: 1; border: none; background: none; color: #94a3b8; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+    .nav-btn.active { color: var(--accent-gold); }
+
+    /* 메인 컨테이너 */
+    main { flex: 1; padding: 15px; padding-bottom: 70px; overflow-y: auto; display: flex; justify-content: center; align-items: center; position: relative; }
+    .tab-content { display: none; width: 100%; max-width: 400px; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
+    .tab-content.active { display: flex; }
+
+    /* 1. 팩 개봉 탭 */
+    .pack { width: 220px; height: 320px; background: linear-gradient(135deg, #ef4444, #8b5cf6); border-radius: 16px; border: 3px solid var(--accent-gold); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: transform 0.2s; }
+    .pack:hover { transform: scale(1.03); }
+
+    /* 2. 등록 폼 탭 */
+    .form-box { background: var(--card-bg); padding: 20px; border-radius: 12px; width: 100%; border: 1px solid #334155; }
+    .form-group { margin-bottom: 12px; text-align: left; }
+    .form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; color: #cbd5e1; }
+    .form-group input, .form-group textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; }
+    .btn { background: var(--accent-gold); color: #000; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+
+    /* 3. 포켓몬 카드 양식 */
+    .pokemon-card {
+      width: 280px; height: 420px; background: linear-gradient(145deg, #fbbf24, #d97706);
+      border-radius: 16px; padding: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+      position: relative; flex-shrink: 0; box-sizing: border-box;
+    }
+    .card-inner { background: #fef3c7; height: 100%; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; color: #1e293b; }
+    .card-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; border-bottom: 2px solid #b45309; padding-bottom: 4px; margin-bottom: 6px; }
+    .card-img-box { width: 100%; height: 180px; border: 2px solid #b45309; border-radius: 6px; overflow: hidden; background: #000; }
+    .card-img-box img { width: 100%; height: 100%; object-fit: cover; }
+    .card-body { margin-top: 8px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .card-meta { font-size: 0.75rem; background: #fde68a; padding: 4px; border-radius: 4px; color: #78350f; font-weight: bold; }
+    .card-quote { font-size: 0.8rem; font-style: italic; border-left: 3px solid #d97706; padding-left: 6px; color: #451a03; margin-top: 4px; }
+    .card-actions { position: absolute; top: -12px; right: 10px; display: flex; gap: 4px; }
+    .mini-btn { background: #000; color: #fff; border: none; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; cursor: pointer; }
+
+    /* 연출 효과 (3D 회전 및 이펙트) */
+    .rotate-anim { animation: spin3d 1.2s ease-out; }
+    @keyframes spin3d {
+      0% { transform: rotateY(0deg) scale(0.5); }
+      50% { transform: rotateY(180deg) scale(1.1); }
+      100% { transform: rotateY(360deg) scale(1); }
+    }
+    #particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99; }
+
+    /* 전시관 스크롤뷰 */
+    .gallery-viewport { display: flex; gap: 20px; overflow-x: auto; width: 100%; height: 100%; align-items: center; padding: 0 40px; scroll-snap-type: x mandatory; }
+    .gallery-viewport .pokemon-card { scroll-snap-align: center; }
+  </style>
+</head>
+<body>
+
+  <header>🎴 MY PHOTO TCG POCKET</header>
+  
+  <canvas id="particleCanvas"></canvas>
+
+  <main>
+    <!-- 탭 1: 개봉 연출 -->
+    <div id="tab-pack" class="tab-content active">
+      <div class="pack" onclick="openRandomPack()">
+        <span style="font-size:3rem">🎁</span>
+        <p style="margin-top:10px; font-weight:bold;">터치해서 카드 팩 개봉</p>
+      </div>
+    </div>
+
+    <!-- 탭 2: 카드 등록 -->
+    <div id="tab-register" class="tab-content">
+      <div class="form-box">
+        <h3 style="margin-bottom:12px; text-align:center;">📸 새 사진 카드 만들기</h3>
+        <div class="form-group"><label>카드 이름</label><input type="text" id="regTitle" placeholder="예: 한강 소풍"></div>
+        <div class="form-group"><label>사진 첨부</label><input type="file" id="regImg" accept="image/*"></div>
+        <div class="form-group"><label>날짜 및 장소</label><input type="text" id="regMeta" placeholder="예: 2026.05.05 / 여의도"></div>
+        <div class="form-group"><label>작가의 한마디</label><textarea id="regQuote" rows="2" placeholder="사진에 담긴 비하인드 스토리"></textarea></div>
+        <button class="btn" onclick="submitNewCard()">✨ 전시관에 카드 등록하기</button>
+      </div>
+    </div>
+
+    <!-- 탭 3: 연출 결과 및 메시지 -->
+    <div id="tab-effect" class="tab-content">
+      <div id="effectCardContainer"></div>
+      <h3 style="margin-top:15px; color:var(--accent-gold); text-align:center;">🎉 사진이 전시관에 전시되었습니다!</h3>
+      <button class="btn" style="width:200px;" onclick="switchTab('gallery')">전시관으로 이동</button>
+    </div>
+
+    <!-- 탭 4: 전시관 (좌우 스크롤) -->
+    <div id="tab-gallery" class="tab-content" style="max-width:100%;">
+      <div class="gallery-viewport" id="galleryContainer"></div>
+    </div>
+  </main>
+
+  <!-- 하단 네비게이션 -->
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('pack')">🎁<span>팩 개봉</span></button>
+    <button class="nav-btn" onclick="switchTab('register')">➕<span>카드 등록</span></button>
+    <button class="nav-btn" onclick="switchTab('gallery')">🖼️<span>전시관</span></button>
+  </nav>
+
+  <script>
+    // 데이터 로드
+    let cards = JSON.parse(localStorage.getItem('myPhotoCards') || '[]');
+
+    // 초기 샘플 데이터 (데이터가 비어있을 경우)
+    if(cards.length === 0) {
+      cards = [{
+        id: Date.now(),
+        title: "협재 해변의 추억",
+        img: "https://picsum.photos/300/200?random=1",
+        meta: "2025.09.12 | 제주도",
+        quote: "바람은 불었지만 기분은 정말 최고였던 날!"
+      }];
+      saveData();
+    }
+
+    function saveData() { localStorage.setItem('myPhotoCards', JSON.stringify(cards)); }
+
+    // 탭 전환
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      if(tabName === 'pack') {
+        document.getElementById('tab-pack').classList.add('active');
+        document.querySelectorAll('.nav-btn')[0].classList.add('active');
+      } else if(tabName === 'register') {
+        document.getElementById('tab-register').classList.add('active');
+        document.querySelectorAll('.nav-btn')[1].classList.add('active');
+      } else if(tabName === 'gallery') {
+        renderGallery();
+        document.getElementById('tab-gallery').classList.add('active');
+        document.querySelectorAll('.nav-btn')[2].classList.add('active');
+      } else if(tabName === 'effect') {
+        document.getElementById('tab-effect').classList.add('active');
+      }
+    }
+
+    // 카드 HTML 템플릿 생성
+    function createCardHTML(card, showActions = false) {
+      return `
+        <div class="pokemon-card">
+          ${showActions ? `
+            <div class="card-actions">
+              <button class="mini-btn" onclick="editCard(${card.id})">✏️ 수정</button>
+              <button class="mini-btn" style="background:#ef4444;" onclick="deleteCard(${card.id})">🗑️</button>
+            </div>
+          ` : ''}
+          <div class="card-inner">
+            <div class="card-header">
+              <span>${card.title}</span>
+              <span style="color:#ef4444; font-size:0.8rem;">HP 100</span>
+            </div>
+            <div class="card-img-box"><img src="${card.img}"></div>
+            <div class="card-body">
+              <div class="card-meta">📍 ${card.meta}</div>
+              <div class="card-quote">"${card.quote}"</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 팩 개봉 시 랜덤 카드 연출
+    function openRandomPack() {
+      const randomCard = cards[Math.floor(Math.random() * cards.length)];
+      triggerCardEffect(randomCard);
+    }
+
+    // 카드 새 등록
+    function submitNewCard() {
+      const title = document.getElementById('regTitle').value || "무제 카드";
+      const meta = document.getElementById('regMeta').value || "날짜/장소 미상";
+      const quote = document.getElementById('regQuote').value || "작가의 한마디가 없습니다.";
+      const fileInput = document.getElementById('regImg');
+
+      const processCard = (imgSrc) => {
+        const newCard = { id: Date.now(), title, img: imgSrc, meta, quote };
+        cards.push(newCard);
+        saveData();
+        triggerCardEffect(newCard);
+      };
+
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => processCard(e.target.result);
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        processCard("https://picsum.photos/300/200?random=" + Math.random());
+      }
+    }
+
+    // 3D 회전 + 이펙트 + 소리 연출
+    function triggerCardEffect(card) {
+      switchTab('effect');
+      const container = document.getElementById('effectCardContainer');
+      container.innerHTML = createCardHTML(card);
+      
+      const cardEl = container.querySelector('.pokemon-card');
+      cardEl.classList.add('rotate-anim');
+
+      playChimeSound();
+      startParticles();
+    }
+
+    // 전시관 그리기
+    function renderGallery() {
+      const gallery = document.getElementById('galleryContainer');
+      gallery.innerHTML = cards.map(c => createCardHTML(c, true)).join('');
+    }
+
+    // 카드 수정
+    function editCard(id) {
+      const card = cards.find(c => c.id === id);
+      if(!card) return;
+
+      const newTitle = prompt("카드 이름을 수정하세요:", card.title);
+      if(newTitle === null) return;
+      const newMeta = prompt("날짜 및 장소를 수정하세요:", card.meta);
+      const newQuote = prompt("작가의 한마디를 수정하세요:", card.quote);
+
+      card.title = newTitle || card.title;
+      card.meta = newMeta || card.meta;
+      card.quote = newQuote || card.quote;
+
+      saveData();
+      renderGallery();
+    }
+
+    // 카드 삭제
+    function deleteCard(id) {
+      if(confirm("이 사진 카드를 삭제하시겠습니까?")) {
+        cards = cards.filter(c => c.id !== id);
+        saveData();
+        renderGallery();
+      }
+    }
+
+    // Web Audio API 효과음 생성 (외부 파일 필요 없음)
+    function playChimeSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.1, ctx.currentTime + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.5);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.1);
+          osc.stop(ctx.currentTime + i * 0.1 + 0.5);
+        });
+      } catch(e){}
+    }
+
+    // Canvas 빛가루 이펙트
+    function startParticles() {
+      const canvas = document.getElementById('particleCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+      for(let i=0; i<50; i++) {
+        particles.push({
+          x: canvas.width/2, y: canvas.height/2,
+          vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+          size: Math.random()*5+2, alpha: 1
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+          p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
+          ctx.fillStyle = `rgba(251, 191, 36, ${p.alpha})`;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+        });
+        particles = particles.filter(p => p.alpha > 0);
+        if(particles.length > 0) requestAnimationFrame(animate);
+      }
+      animate();
+    }
+  </script>
+</body>
+</html>
