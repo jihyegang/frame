@@ -12,15 +12,15 @@
   <style>
     :root {
       --bg-color: #f8fafc;        /* 밝은 크림/파스텔톤 배경 */
-      --card-bg: #ffffff;          /* 깨끗한 흰색 카드 배경 */
-      --accent-gold: #d97706;      /* 더 또렷해진 골드 아센트 */
-      --text-main: #1e293b;       /* 밝은 배경용 진한 텍스트 */
+      --card-bg: #ffffff;          /* 깨끗한 화이트 배경 */
+      --accent-gold: #d97706;      /* 또렷한 골드 컬러 */
+      --text-main: #1e293b;       /* 진한 텍스트 */
       --border-color: #e2e8f0;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
     body { 
-      background-color: var(--bg-color); 
+      background-color: var(--bg-color) !important; 
       color: var(--text-main); 
       display: flex; 
       flex-direction: column; 
@@ -74,7 +74,7 @@
     }
     .pack:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(217, 119, 6, 0.25); }
 
-    /* 2. 등록 폼 탭 (깔끔한 화이트 스타일) */
+    /* 2. 등록 폼 탭 */
     .form-box { 
       background: var(--card-bg); 
       padding: 24px; 
@@ -94,9 +94,9 @@
     .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-gold); }
     .btn { background: var(--accent-gold); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 0.95rem; }
 
-    /* 3. 3D 입체 반응형 포켓몬 카드 양식 */
+    /* 3. 3D 입체 포켓몬 카드 */
     .card-wrapper {
-      perspective: 1000px; /* 3D 효과 원근감 설정 */
+      perspective: 1000px;
       padding: 10px;
     }
     .pokemon-card {
@@ -106,11 +106,10 @@
       box-shadow: 0 12px 24px rgba(0,0,0,0.12);
       position: relative; flex-shrink: 0; box-sizing: border-box;
       transform-style: preserve-3d;
-      transition: transform 0.1s ease-out; /* 부드러운 기울기 */
+      transition: transform 0.1s ease-out;
       cursor: pointer;
     }
     
-    /* 카드 광택(Shine) 레이어 */
     .pokemon-card::after {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -171,7 +170,7 @@
       </div>
     </div>
 
-    <!-- 3. 연출 결과 (3D 인터랙티브 적용) -->
+    <!-- 3. 연출 결과 (3D 반응 적용) -->
     <div id="tab-effect" class="tab-content">
       <div id="effectCardContainer"></div>
       <h3 id="effectTitle" style="margin-top:15px; color:var(--accent-gold); text-align:center;">🎉 추억의 카드를 뽑았습니다!</h3>
@@ -234,7 +233,6 @@
       }
     }
 
-    // 카드 3D HTML 템플릿 생성
     function createCardHTML(card, showActions = false) {
       return `
         <div class="card-wrapper">
@@ -261,17 +259,14 @@
       `;
     }
 
-    /* 🎮 3D Tilt (입체 반응) 스크립트 */
     function handleTilt(e, card) {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      
-      const rotateX = ((y - centerY) / centerY) * -20; // Y축 기준 회전
-      const rotateY = ((x - centerX) / centerX) * 20;  // X축 기준 회전
+      const rotateX = ((y - centerY) / centerY) * -20;
+      const rotateY = ((x - centerX) / centerX) * 20;
 
       card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
     }
@@ -282,10 +277,8 @@
         const rect = card.getBoundingClientRect();
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
-        
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        
         const rotateX = ((y - centerY) / centerY) * -20;
         const rotateY = ((x - centerX) / centerX) * 20;
 
