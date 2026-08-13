@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Photo TCG Pocket</title>
+  <title>My Little Frame Gallery</title>
+  <!-- 구글 필기체 폰트(Great Vibes) 불러오기 -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-color: #0f172a;
@@ -15,8 +17,20 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
     body { background-color: var(--bg-color); color: #f8fafc; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-    /* 헤더 & 하단 탭 */
-    header { background: #1e293b; text-align: center; padding: 12px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #334155; color: var(--accent-gold); }
+    /* 헤더: 필기체 스타일 적용 */
+    header { 
+      background: #1e293b; 
+      text-align: center; 
+      padding: 14px 10px; 
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.2rem;
+      border-bottom: 1px solid #334155; 
+      color: var(--accent-gold);
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    /* 하단 탭 */
     nav { display: flex; background: #1e293b; border-top: 1px solid #334155; position: fixed; bottom: 0; width: 100%; height: 60px; }
     .nav-btn { flex: 1; border: none; background: none; color: #94a3b8; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .nav-btn.active { color: var(--accent-gold); }
@@ -69,7 +83,8 @@
 </head>
 <body>
 
-  <header>🎴 MY PHOTO TCG POCKET</header>
+  <!-- 상단 필기체 헤더 -->
+  <header>My Little Frame Gallery</header>
   
   <canvas id="particleCanvas"></canvas>
 
@@ -118,7 +133,7 @@
     // 데이터 로드
     let cards = JSON.parse(localStorage.getItem('myPhotoCards') || '[]');
 
-    // 초기 샘플 데이터 (데이터가 비어있을 경우)
+    // 초기 샘플 데이터
     if(cards.length === 0) {
       cards = [{
         id: Date.now(),
@@ -252,11 +267,11 @@
       }
     }
 
-    // Web Audio API 효과음 생성 (외부 파일 필요 없음)
+    // Web Audio API 효과음 생성
     function playChimeSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, i) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
