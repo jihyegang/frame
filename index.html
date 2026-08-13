@@ -4,17 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Little Frame Gallery</title>
-  <!-- 구글 필기체 폰트 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-color: #f8fafc;        /* 밝은 크림/파스텔톤 배경 */
-      --card-bg: #ffffff;          /* 깨끗한 화이트 배경 */
-      --accent-gold: #d97706;      /* 또렷한 골드 컬러 */
-      --text-main: #1e293b;       /* 진한 텍스트 */
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --accent-gold: #d97706;
+      --text-main: #1e293b;
       --border-color: #e2e8f0;
     }
 
@@ -28,7 +27,6 @@
       overflow: hidden; 
     }
 
-    /* 밝고 세련된 헤더 */
     header { 
       background: #ffffff; 
       text-align: center; 
@@ -41,7 +39,6 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     }
     
-    /* 하단 탭 */
     nav { 
       display: flex; 
       background: #ffffff; 
@@ -56,12 +53,10 @@
     .nav-btn { flex: 1; border: none; background: none; color: #64748b; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .nav-btn.active { color: var(--accent-gold); }
 
-    /* 메인 컨테이너 */
     main { flex: 1; padding: 15px; padding-bottom: 70px; overflow-y: auto; display: flex; justify-content: center; align-items: center; position: relative; }
     .tab-content { display: none; width: 100%; max-width: 400px; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
     .tab-content.active { display: flex; }
 
-    /* 1. 팩 개봉 탭 (화사한 파스텔 패키지) */
     .pack { 
       width: 220px; height: 320px; 
       background: linear-gradient(135deg, #ffedd5, #fef08a, #fed7aa); 
@@ -74,7 +69,6 @@
     }
     .pack:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(217, 119, 6, 0.25); }
 
-    /* 2. 등록 폼 탭 */
     .form-box { 
       background: var(--card-bg); 
       padding: 24px; 
@@ -94,11 +88,7 @@
     .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-gold); }
     .btn { background: var(--accent-gold); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 0.95rem; }
 
-    /* 3. 3D 입체 포켓몬 카드 */
-    .card-wrapper {
-      perspective: 1000px;
-      padding: 10px;
-    }
+    .card-wrapper { perspective: 1000px; padding: 10px; }
     .pokemon-card {
       width: 280px; height: 420px; 
       background: linear-gradient(145deg, #fef08a, #fde047, #f59e0b);
@@ -111,8 +101,7 @@
     }
     
     .pokemon-card::after {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
       border-radius: 16px;
       background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%);
       pointer-events: none;
@@ -128,7 +117,6 @@
     .card-actions { position: absolute; top: -12px; right: 10px; display: flex; gap: 4px; z-index: 5; }
     .mini-btn { background: #334155; color: #fff; border: none; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; cursor: pointer; }
 
-    /* 개봉 애니메이션 */
     .rotate-anim { animation: spin3d 1.2s ease-out; }
     @keyframes spin3d {
       0% { transform: rotateY(0deg) scale(0.5); }
@@ -137,16 +125,13 @@
     }
     #particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99; }
 
-    /* 전시관 스크롤뷰 */
     .gallery-viewport { display: flex; gap: 20px; overflow-x: auto; width: 100%; height: 100%; align-items: center; padding: 20px 40px; scroll-snap-type: x mandatory; }
     .gallery-viewport .card-wrapper { scroll-snap-align: center; }
   </style>
 </head>
 <body>
 
-  <!-- 헤더 -->
   <header>My Little Frame Gallery</header>
-  
   <canvas id="particleCanvas"></canvas>
 
   <main>
@@ -170,7 +155,7 @@
       </div>
     </div>
 
-    <!-- 3. 연출 결과 (3D 반응 적용) -->
+    <!-- 3. 연출 결과 -->
     <div id="tab-effect" class="tab-content">
       <div id="effectCardContainer"></div>
       <h3 id="effectTitle" style="margin-top:15px; color:var(--accent-gold); text-align:center;">🎉 추억의 카드를 뽑았습니다!</h3>
@@ -184,7 +169,6 @@
     </div>
   </main>
 
-  <!-- 하단 탭 -->
   <nav>
     <button class="nav-btn active" onclick="switchTab('pack')">🎁<span>팩 개봉</span></button>
     <button class="nav-btn" onclick="switchTab('register')">➕<span>카드 등록</span></button>
@@ -197,17 +181,6 @@
       cards = JSON.parse(localStorage.getItem('myPhotoCards') || '[]');
     } catch(e) {
       cards = [];
-    }
-
-    if(cards.length === 0) {
-      cards = [{
-        id: Date.now(),
-        title: "협재 해변의 추억",
-        img: "https://picsum.photos/300/200?random=1",
-        meta: "2025.09.12 | 제주도",
-        quote: "바람은 불었지만 기분은 정말 최고였던 날!"
-      }];
-      saveData();
     }
 
     function saveData() { 
@@ -263,11 +236,8 @@
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -20;
-      const rotateY = ((x - centerX) / centerX) * 20;
-
+      const rotateX = ((y - rect.height/2) / (rect.height/2)) * -20;
+      const rotateY = ((x - rect.width/2) / (rect.width/2)) * 20;
       card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
     }
 
@@ -277,11 +247,8 @@
         const rect = card.getBoundingClientRect();
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -20;
-        const rotateY = ((x - centerX) / centerX) * 20;
-
+        const rotateX = ((y - rect.height/2) / (rect.height/2)) * -20;
+        const rotateY = ((x - rect.width/2) / (rect.width/2)) * 20;
         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
       }
     }
@@ -290,9 +257,10 @@
       card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
     }
 
+    /* 🎯 등록된 카드가 없을 때 알림창을 띄우고 바로 등록 탭으로 전환 */
     function openRandomPack() {
       if (!cards || cards.length === 0) {
-        alert("아직 등록된 사진 카드가 없어요! '카드 등록' 탭에서 첫 카드를 만들어보세요 📸");
+        alert("아직 등록된 사진 카드가 없습니다!\n'카드 등록' 화면으로 이동하여 먼저 카드를 제작해 주세요 📸");
         switchTab('register');
         return;
       }
@@ -315,6 +283,12 @@
         cards.push(newCard);
         saveData();
         
+        // 폼 초기화
+        document.getElementById('regTitle').value = "";
+        document.getElementById('regMeta').value = "";
+        document.getElementById('regQuote').value = "";
+        document.getElementById('regImg').value = "";
+
         document.getElementById('effectTitle').innerText = "🎉 사진이 전시관에 전시되었습니다!";
         triggerCardEffect(newCard);
       };
@@ -342,7 +316,11 @@
 
     function renderGallery() {
       const gallery = document.getElementById('galleryContainer');
-      gallery.innerHTML = cards.map(c => createCardHTML(c, true)).join('');
+      if(cards.length === 0) {
+        gallery.innerHTML = `<p style="color:#64748b; text-align:center; width:100%;">등록된 카드가 없습니다.<br>카드 등록 탭에서 새 카드를 만드실 수 있어요!</p>`;
+      } else {
+        gallery.innerHTML = cards.map(c => createCardHTML(c, true)).join('');
+      }
     }
 
     function editCard(id) {
