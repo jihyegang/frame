@@ -242,8 +242,18 @@
 
   <script>
     let cards = [];
+
+    // 🔥 이전 테스트 데이터가 남아있다면 모두 삭제하고 빈 배열로 초기화
     try {
-      cards = JSON.parse(localStorage.getItem('myPhotoCards') || '[]');
+      const saved = localStorage.getItem('myPhotoCards');
+      if (saved) {
+        cards = JSON.parse(saved);
+        // 만약 예시 데이터(picsum 이미지 주소)가 포함되어 있다면 완전 싹 지움
+        if (cards.some(c => c.img && c.img.includes('picsum.photos'))) {
+          cards = [];
+          localStorage.removeItem('myPhotoCards');
+        }
+      }
     } catch(e) {
       cards = [];
     }
@@ -331,9 +341,10 @@
       card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
     }
 
+    /* 🎯 팩 개봉 시 유저가 만든 카드가 없으면 무조건 알림창 출력 */
     function openRandomPack() {
       if (!cards || cards.length === 0) {
-        alert("아직 등록된 사진 카드가 없습니다!\n'카드 등록' 화면으로 이동하여 먼저 카드를 제작해 주세요 📸");
+        alert("아직 등록된 카드가 없습니다!\n'카드 등록' 탭으로 이동하여 카드를 먼저 등록해 주세요 📸");
         switchTab('register');
         return;
       }
@@ -346,13 +357,19 @@
     }
 
     function submitNewCard() {
-      const title = document.getElementById('regTitle').value || "무제 카드";
-      const meta = document.getElementById('regMeta').value || "날짜/장소 미상";
-      const quote = document.getElementById('regQuote').value || "작가의 한마디가 없습니다.";
+      const title = document.getElementById('regTitle').value.trim() || "무제 카드";
+      const meta = document.getElementById('regMeta').value.trim() || "날짜/장소 미상";
+      const quote = document.getElementById('regQuote').value.trim() || "작가의 한마디가 없습니다.";
       const fileInput = document.getElementById('regImg');
 
-      const processCard = (imgSrc) => {
-        const newCard = { id: Date.now(), title, img: imgSrc, meta, quote };
+      if (!fileInput.files || !fileInput.files[0]) {
+        alert("카드에 넣을 사진을 선택해 주세요!");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newCard = { id: Date.now(), title, img: e.target.result, meta, quote };
         cards.push(newCard);
         saveData();
         
@@ -361,17 +378,10 @@
         document.getElementById('regQuote').value = "";
         document.getElementById('regImg').value = "";
 
-        document.getElementById('effectTitle').innerText = "🎉 사진이 전시관에 전시되었습니다!";
+        document.getElementById('effectTitle').innerText = "🎉 새 사진 카드가 제작되었습니다!";
         triggerCardEffect(newCard);
       };
-
-      if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => processCard(e.target.result);
-        reader.readAsDataURL(fileInput.files[0]);
-      } else {
-        processCard("https://picsum.photos/300/200?random=" + Math.random());
-      }
+      reader.readAsDataURL(fileInput.files[0]);
     }
 
     function triggerCardEffect(card) {
@@ -389,7 +399,7 @@
     function renderGallery() {
       const gallery = document.getElementById('galleryContainer');
       if(cards.length === 0) {
-        gallery.innerHTML = `<p style="color:#64748b; text-align:center; width:100%;">등록된 카드가 없습니다.<br>카드 등록 탭에서 새 카드를 만드실 수 있어요!</p>`;
+        gallery.innerHTML = `<p style="color:#64748b; text-align:center; width:100%;">등록된 카드가 없습니다.<br>카드 등록 탭에서 새 카드를 만들어보세요!</p>`;
       } else {
         gallery.innerHTML = cards.map(c => createCardHTML(c, true)).join('');
       }
