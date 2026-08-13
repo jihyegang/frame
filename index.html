@@ -4,38 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Little Frame Gallery</title>
-  <!-- 필기체 폰트 불러오기 -->
+  <!-- 구글 필기체 폰트 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent-gold: #f59e0b;
-      --primary: #3b82f6;
+      --bg-color: #f8fafc;        /* 밝은 크림/파스텔톤 배경 */
+      --card-bg: #ffffff;          /* 깨끗한 흰색 카드 배경 */
+      --accent-gold: #d97706;      /* 더 또렷해진 골드 아센트 */
+      --text-main: #1e293b;       /* 밝은 배경용 진한 텍스트 */
+      --border-color: #e2e8f0;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
-    body { background-color: var(--bg-color); color: #f8fafc; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    body { 
+      background-color: var(--bg-color); 
+      color: var(--text-main); 
+      display: flex; 
+      flex-direction: column; 
+      height: 100vh; 
+      overflow: hidden; 
+    }
 
-    /* 헤더 스타일 (필기체 적용) */
+    /* 밝고 세련된 헤더 */
     header { 
-      background: #1e293b; 
+      background: #ffffff; 
       text-align: center; 
       padding: 14px 10px; 
       font-family: 'Great Vibes', cursive;
-      font-size: 2.2rem;
-      border-bottom: 1px solid #334155; 
+      font-size: 2.3rem;
+      border-bottom: 1px solid var(--border-color); 
       color: var(--accent-gold);
       letter-spacing: 1px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     }
     
     /* 하단 탭 */
-    nav { display: flex; background: #1e293b; border-top: 1px solid #334155; position: fixed; bottom: 0; width: 100%; height: 60px; z-index: 10; }
-    .nav-btn { flex: 1; border: none; background: none; color: #94a3b8; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+    nav { 
+      display: flex; 
+      background: #ffffff; 
+      border-top: 1px solid var(--border-color); 
+      position: fixed; 
+      bottom: 0; 
+      width: 100%; 
+      height: 60px; 
+      z-index: 10; 
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+    }
+    .nav-btn { flex: 1; border: none; background: none; color: #64748b; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .nav-btn.active { color: var(--accent-gold); }
 
     /* 메인 컨테이너 */
@@ -43,34 +61,75 @@
     .tab-content { display: none; width: 100%; max-width: 400px; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
     .tab-content.active { display: flex; }
 
-    /* 1. 팩 개봉 탭 */
-    .pack { width: 220px; height: 320px; background: linear-gradient(135deg, #ef4444, #8b5cf6); border-radius: 16px; border: 3px solid var(--accent-gold); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: transform 0.2s; }
-    .pack:hover { transform: scale(1.03); }
-
-    /* 2. 등록 폼 탭 */
-    .form-box { background: var(--card-bg); padding: 20px; border-radius: 12px; width: 100%; border: 1px solid #334155; }
-    .form-group { margin-bottom: 12px; text-align: left; }
-    .form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; color: #cbd5e1; }
-    .form-group input, .form-group textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; }
-    .btn { background: var(--accent-gold); color: #000; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
-
-    /* 3. 포켓몬 카드 양식 */
-    .pokemon-card {
-      width: 280px; height: 420px; background: linear-gradient(145deg, #fbbf24, #d97706);
-      border-radius: 16px; padding: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-      position: relative; flex-shrink: 0; box-sizing: border-box;
+    /* 1. 팩 개봉 탭 (화사한 파스텔 패키지) */
+    .pack { 
+      width: 220px; height: 320px; 
+      background: linear-gradient(135deg, #ffedd5, #fef08a, #fed7aa); 
+      border-radius: 16px; 
+      border: 3px solid var(--accent-gold); 
+      display: flex; flex-direction: column; justify-content: center; align-items: center; 
+      cursor: pointer; 
+      box-shadow: 0 10px 25px rgba(217, 119, 6, 0.15); 
+      transition: transform 0.2s, box-shadow 0.2s; 
     }
-    .card-inner { background: #fef3c7; height: 100%; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; color: #1e293b; }
-    .card-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; border-bottom: 2px solid #b45309; padding-bottom: 4px; margin-bottom: 6px; }
-    .card-img-box { width: 100%; height: 180px; border: 2px solid #b45309; border-radius: 6px; overflow: hidden; background: #000; }
+    .pack:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(217, 119, 6, 0.25); }
+
+    /* 2. 등록 폼 탭 (깔끔한 화이트 스타일) */
+    .form-box { 
+      background: var(--card-bg); 
+      padding: 24px; 
+      border-radius: 16px; 
+      width: 100%; 
+      border: 1px solid var(--border-color); 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .form-group { margin-bottom: 14px; text-align: left; }
+    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: #475569; font-weight: 600; }
+    .form-group input, .form-group textarea { 
+      width: 100%; padding: 10px; border-radius: 8px; 
+      border: 1px solid var(--border-color); 
+      background: #f8fafc; color: var(--text-main); 
+      outline: none; transition: border 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-gold); }
+    .btn { background: var(--accent-gold); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 0.95rem; }
+
+    /* 3. 3D 입체 반응형 포켓몬 카드 양식 */
+    .card-wrapper {
+      perspective: 1000px; /* 3D 효과 원근감 설정 */
+      padding: 10px;
+    }
+    .pokemon-card {
+      width: 280px; height: 420px; 
+      background: linear-gradient(145deg, #fef08a, #fde047, #f59e0b);
+      border-radius: 16px; padding: 10px; 
+      box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+      position: relative; flex-shrink: 0; box-sizing: border-box;
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out; /* 부드러운 기울기 */
+      cursor: pointer;
+    }
+    
+    /* 카드 광택(Shine) 레이어 */
+    .pokemon-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%);
+      pointer-events: none;
+    }
+
+    .card-inner { background: #ffffff; height: 100%; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; color: #1e293b; border: 1px solid #fef08a; }
+    .card-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; border-bottom: 2px solid #f59e0b; padding-bottom: 4px; margin-bottom: 6px; color: #b45309; }
+    .card-img-box { width: 100%; height: 180px; border: 2px solid #f59e0b; border-radius: 6px; overflow: hidden; background: #e2e8f0; }
     .card-img-box img { width: 100%; height: 100%; object-fit: cover; }
     .card-body { margin-top: 8px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .card-meta { font-size: 0.75rem; background: #fde68a; padding: 4px; border-radius: 4px; color: #78350f; font-weight: bold; }
-    .card-quote { font-size: 0.8rem; font-style: italic; border-left: 3px solid #d97706; padding-left: 6px; color: #451a03; margin-top: 4px; }
-    .card-actions { position: absolute; top: -12px; right: 10px; display: flex; gap: 4px; }
-    .mini-btn { background: #000; color: #fff; border: none; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; cursor: pointer; }
+    .card-meta { font-size: 0.75rem; background: #fef3c7; padding: 4px 6px; border-radius: 4px; color: #b45309; font-weight: bold; }
+    .card-quote { font-size: 0.8rem; font-style: italic; border-left: 3px solid #f59e0b; padding-left: 6px; color: #475569; margin-top: 4px; }
+    .card-actions { position: absolute; top: -12px; right: 10px; display: flex; gap: 4px; z-index: 5; }
+    .mini-btn { background: #334155; color: #fff; border: none; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; cursor: pointer; }
 
-    /* 연출 효과 */
+    /* 개봉 애니메이션 */
     .rotate-anim { animation: spin3d 1.2s ease-out; }
     @keyframes spin3d {
       0% { transform: rotateY(0deg) scale(0.5); }
@@ -80,8 +139,8 @@
     #particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99; }
 
     /* 전시관 스크롤뷰 */
-    .gallery-viewport { display: flex; gap: 20px; overflow-x: auto; width: 100%; height: 100%; align-items: center; padding: 0 40px; scroll-snap-type: x mandatory; }
-    .gallery-viewport .pokemon-card { scroll-snap-align: center; }
+    .gallery-viewport { display: flex; gap: 20px; overflow-x: auto; width: 100%; height: 100%; align-items: center; padding: 20px 40px; scroll-snap-type: x mandatory; }
+    .gallery-viewport .card-wrapper { scroll-snap-align: center; }
   </style>
 </head>
 <body>
@@ -95,15 +154,15 @@
     <!-- 1. 팩 개봉 -->
     <div id="tab-pack" class="tab-content active">
       <div class="pack" onclick="openRandomPack()">
-        <span style="font-size:3rem">🎁</span>
-        <p style="margin-top:10px; font-weight:bold;">터치해서 카드 팩 개봉</p>
+        <span style="font-size:3.5rem">🎁</span>
+        <p style="margin-top:12px; font-weight:bold; color:#b45309;">터치해서 카드 팩 개봉</p>
       </div>
     </div>
 
     <!-- 2. 카드 등록 -->
     <div id="tab-register" class="tab-content">
       <div class="form-box">
-        <h3 style="margin-bottom:12px; text-align:center;">📸 새 사진 카드 만들기</h3>
+        <h3 style="margin-bottom:14px; text-align:center; color:#b45309;">📸 새 사진 카드 만들기</h3>
         <div class="form-group"><label>카드 이름</label><input type="text" id="regTitle" placeholder="예: 한강 소풍"></div>
         <div class="form-group"><label>사진 첨부</label><input type="file" id="regImg" accept="image/*"></div>
         <div class="form-group"><label>날짜 및 장소</label><input type="text" id="regMeta" placeholder="예: 2026.05.05 / 여의도"></div>
@@ -112,11 +171,12 @@
       </div>
     </div>
 
-    <!-- 3. 연출 결과 -->
+    <!-- 3. 연출 결과 (3D 인터랙티브 적용) -->
     <div id="tab-effect" class="tab-content">
       <div id="effectCardContainer"></div>
-      <h3 style="margin-top:15px; color:var(--accent-gold); text-align:center;">🎉 사진이 전시관에 전시되었습니다!</h3>
-      <button class="btn" style="width:200px;" onclick="switchTab('gallery')">전시관으로 이동</button>
+      <h3 id="effectTitle" style="margin-top:15px; color:var(--accent-gold); text-align:center;">🎉 추억의 카드를 뽑았습니다!</h3>
+      <p style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">✨ 마우스나 손가락을 움직여 카드를 기울여보세요!</p>
+      <button class="btn" style="width:200px; margin-top:15px;" onclick="switchTab('gallery')">전시관으로 이동</button>
     </div>
 
     <!-- 4. 전시관 -->
@@ -174,32 +234,80 @@
       }
     }
 
+    // 카드 3D HTML 템플릿 생성
     function createCardHTML(card, showActions = false) {
       return `
-        <div class="pokemon-card">
-          ${showActions ? `
-            <div class="card-actions">
-              <button class="mini-btn" onclick="editCard(${card.id})">✏️ 수정</button>
-              <button class="mini-btn" style="background:#ef4444;" onclick="deleteCard(${card.id})">🗑️</button>
-            </div>
-          ` : ''}
-          <div class="card-inner">
-            <div class="card-header">
-              <span>${card.title}</span>
-              <span style="color:#ef4444; font-size:0.8rem;">HP 100</span>
-            </div>
-            <div class="card-img-box"><img src="${card.img}"></div>
-            <div class="card-body">
-              <div class="card-meta">📍 ${card.meta}</div>
-              <div class="card-quote">"${card.quote}"</div>
+        <div class="card-wrapper">
+          <div class="pokemon-card" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)" ontouchmove="handleTouchTilt(event, this)" ontouchend="resetTilt(this)">
+            ${showActions ? `
+              <div class="card-actions">
+                <button class="mini-btn" onclick="editCard(${card.id})">✏️ 수정</button>
+                <button class="mini-btn" style="background:#ef4444;" onclick="deleteCard(${card.id})">🗑️</button>
+              </div>
+            ` : ''}
+            <div class="card-inner">
+              <div class="card-header">
+                <span>${card.title}</span>
+                <span style="color:#ef4444; font-size:0.8rem;">HP 100</span>
+              </div>
+              <div class="card-img-box"><img src="${card.img}"></div>
+              <div class="card-body">
+                <div class="card-meta">📍 ${card.meta}</div>
+                <div class="card-quote">"${card.quote}"</div>
+              </div>
             </div>
           </div>
         </div>
       `;
     }
 
+    /* 🎮 3D Tilt (입체 반응) 스크립트 */
+    function handleTilt(e, card) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = ((y - centerY) / centerY) * -20; // Y축 기준 회전
+      const rotateY = ((x - centerX) / centerX) * 20;  // X축 기준 회전
+
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    }
+
+    function handleTouchTilt(e, card) {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        const rect = card.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = ((y - centerY) / centerY) * -20;
+        const rotateY = ((x - centerX) / centerX) * 20;
+
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+      }
+    }
+
+    function resetTilt(card) {
+      card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+    }
+
     function openRandomPack() {
-      const randomCard = cards[Math.floor(Math.random() * cards.length)];
+      if (!cards || cards.length === 0) {
+        alert("아직 등록된 사진 카드가 없어요! '카드 등록' 탭에서 첫 카드를 만들어보세요 📸");
+        switchTab('register');
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * cards.length);
+      const randomCard = cards[randomIndex];
+
+      document.getElementById('effectTitle').innerText = "🎉 추억의 카드를 뽑았습니다!";
       triggerCardEffect(randomCard);
     }
 
@@ -213,6 +321,8 @@
         const newCard = { id: Date.now(), title, img: imgSrc, meta, quote };
         cards.push(newCard);
         saveData();
+        
+        document.getElementById('effectTitle').innerText = "🎉 사진이 전시관에 전시되었습니다!";
         triggerCardEffect(newCard);
       };
 
@@ -305,7 +415,7 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach((p, i) => {
           p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
-          ctx.fillStyle = `rgba(251, 191, 36, ${p.alpha})`;
+          ctx.fillStyle = `rgba(217, 119, 6, ${p.alpha})`;
           ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
         });
         particles = particles.filter(p => p.alpha > 0);
